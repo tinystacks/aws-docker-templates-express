@@ -1,0 +1,21 @@
+{
+  "name": "express_crud_app",
+  "version": "1.0.0",
+  "description": "Node.js + express on Docker",
+  "author": "tinystacks - about@tinystacks.com",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.822.0",
+    "express": "^4.16.1",
+    "typescript": "^4.2.3",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.11",
+    "@types/uuid": "^8.3.0"
+  }
+}
