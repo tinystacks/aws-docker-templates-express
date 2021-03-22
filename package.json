@@ -5,7 +5,7 @@
   "author": "tinystacks - about@tinystacks.com",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node built/server.js",
     "build": "tsc"
   },
   "dependencies": {

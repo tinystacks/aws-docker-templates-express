@@ -7,7 +7,7 @@ import { putItem } from "./put-item";
 import { putAuthenticatedItem } from "./put-authenticated-item";
 import { getItem } from "./get-item";
 // Constants
-const PORT = 8000;
+const PORT = 80;
 const HOST = '0.0.0.0';
 
 
