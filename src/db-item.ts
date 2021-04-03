@@ -1,0 +1,62 @@
+import { Request, Response } from "express";
+import { createItem, getItem, listItems } from "./aws-helpers";
+import { addHeadersToResponse } from "./server-helpers";
+import * as uuid from "uuid";
+
+export async function getDbItem(req: Request, res: Response) {
+  addHeadersToResponse(res);
+  let promise;
+  if (!!req.body && !!JSON.parse(req.body)) {
+    const body = JSON.parse(req.body);
+    promise = getItem("SYSTEM", body.itemId);
+  } else {
+    promise = listItems("SYSTEM");
+  }
+
+  promise.then(function (data: any) {
+      res.status(200).send(data);
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.status(500).send();
+    });
+}
+
+export async function putDbItem(req: Request, res: Response) {
+  const body = JSON.parse(req.body);
+  addHeadersToResponse(res);
+  createItem("SYSTEM", uuid.v4(), body.title, body.content)
+    .then(function(data) {
+      res.status(200).send();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).send();
+    });
+}
+
+export async function updateDbItem(req: Request, res: Response) {
+  const body = JSON.parse(req.body);
+  addHeadersToResponse(res);
+  createItem("SYSTEM", body.itemId, body.title, body.content)
+    .then(function(data) {
+      res.status(200).send();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).send();
+    });
+}
+
+export async function deleteDbItem(req: Request, res: Response) {
+  const body = JSON.parse(req.body);
+  addHeadersToResponse(res);
+  createItem("SYSTEM", uuid.v4(), body.title, body.content)
+    .then(function(data) {
+      res.status(200).send();
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.status(500).send();
+    });
+}

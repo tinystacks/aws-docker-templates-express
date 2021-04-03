@@ -41,6 +41,31 @@ export function createItem(userId: string, itemId: string, title: string, conten
   return ddbClient.put(params).promise();
 }
 
+export function updateItem(userId: string, itemId: string, title: string, content: string) {
+  const params = {
+    TableName: process.env.TABLE_NAME,
+    Key: {
+      "userId": userId,
+      "itemId": itemId
+    },
+    UpdateExpression: "set info.title = :t, info.content=:c",
+    ExpressionAttributeValues: {
+      ":t": title,
+      ":c": content,
+    }
+  };
+  return ddbClient.update(params).promise();
+}
+export function deleteItem(userId: string, itemId: string) {
+  return ddbClient.delete({
+    TableName: process.env.TABLE_NAME,
+    Key: {
+      "userId": userId,
+      "itemId": itemId,
+    }
+  }).promise();
+}
+
 export function listItems(userId: string) {
   const params = {
     TableName: process.env.TABLE_NAME,
@@ -51,4 +76,14 @@ export function listItems(userId: string) {
   };
 
   return ddbClient.query(params).promise();
+}
+
+export function getItem(userId: string, itemId: string) {
+  return ddbClient.get({
+    TableName: process.env.TABLE_NAME,
+    Key: {
+      "userId": userId,
+      "itemId": itemId,
+    }
+  }).promise();
 }

@@ -1,11 +1,10 @@
 import * as express from "express";
-import * as uuid from "uuid";
 import * as bodyParser from "body-parser";
 
-import { createItem } from "./aws-helpers";
-import { putItem } from "./put-item";
-import { putAuthenticatedItem } from "./put-authenticated-item";
-import { getItem } from "./get-item";
+import { deleteDbItem, getDbItem, putDbItem, updateDbItem } from "./db-item";
+import { deleteAuthenticatedItem, getAuthenticatedItem, putAuthenticatedItem, updateAuthenticatedItem } from "./authenticated-item";
+import { deleteItem, getItem, putItem, updateItem } from "./local-item";
+
 // Constants
 const PORT = 80;
 const HOST = '0.0.0.0';
@@ -20,8 +19,18 @@ app.get("/ping", (req, res) => {
 });
 
 app.put('/item', parser, putItem);
-app.get('/item', parser, getItem);
+app.put('/item', parser, getItem);
+app.put('/item', parser, updateItem);
+app.put('/item', parser, deleteItem);
+
+app.put('/db-item', parser, putDbItem);
+app.post('/db-item', parser, updateDbItem);
+app.get('/db-item', parser, getDbItem);
+app.delete('/db-item', parser, deleteDbItem);
+
 app.put('/authenticated-item', parser, putAuthenticatedItem);
-app.get('/authenticated-item', parser, putAuthenticatedItem);
+app.get('/authenticated-item', parser, getAuthenticatedItem);
+app.post('/authenticated-item', parser, updateAuthenticatedItem);
+app.delete('/authenticated-item', parser, deleteAuthenticatedItem);
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
