@@ -6,7 +6,7 @@ import { deleteAuthenticatedItem, getAuthenticatedItem, putAuthenticatedItem, up
 import { deleteItem, getItem, putItem, updateItem } from "./local-item";
 
 // Constants
-const PORT = 80;
+const PORT = process.env.STAGE === "local" ? 8000 : 80;
 const HOST = '0.0.0.0';
 
 
