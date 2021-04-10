@@ -1,0 +1,11 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_ENDPOINT
+      - docker pull ecrImageUrl:$PREVIOUS_STAGE_NAME
+      - docker tag builtimage:latest $ECR_IMAGE_URL:$STAGE_NAME
+      - docker push $ECR_IMAGE_URL:$STAGE_NAME
+  post_build:
+    commands:
+      - aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --force-new-deployment
