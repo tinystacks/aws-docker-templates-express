@@ -19,9 +19,9 @@ app.get("/ping", (req, res) => {
 });
 
 app.put('/item', parser, putItem);
-app.put('/item', parser, getItem);
-app.put('/item', parser, updateItem);
-app.put('/item', parser, deleteItem);
+app.get('/item', parser, getItem);
+app.post('/item', parser, updateItem);
+app.delete('/item', parser, deleteItem);
 
 app.put('/db-item', parser, putDbItem);
 app.post('/db-item', parser, updateDbItem);
