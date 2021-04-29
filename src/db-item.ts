@@ -6,8 +6,8 @@ import * as uuid from "uuid";
 export async function getDbItem(req: Request, res: Response) {
   addHeadersToResponse(res);
   let promise;
-  if (!!req.body && !!JSON.parse(req.body)) {
-    const body = JSON.parse(req.body);
+  const body = req.body;
+  if (!!req.body) {
     promise = getItem("SYSTEM", body.itemId);
   } else {
     promise = listItems("SYSTEM");
@@ -23,7 +23,7 @@ export async function getDbItem(req: Request, res: Response) {
 }
 
 export async function putDbItem(req: Request, res: Response) {
-  const body = JSON.parse(req.body);
+  const body = req.body;
   addHeadersToResponse(res);
   createItem("SYSTEM", uuid.v4(), body.title, body.content)
     .then(function(data) {
@@ -36,7 +36,7 @@ export async function putDbItem(req: Request, res: Response) {
 }
 
 export async function updateDbItem(req: Request, res: Response) {
-  const body = JSON.parse(req.body);
+  const body = req.body;
   addHeadersToResponse(res);
   createItem("SYSTEM", body.itemId, body.title, body.content)
     .then(function(data) {
@@ -49,7 +49,7 @@ export async function updateDbItem(req: Request, res: Response) {
 }
 
 export async function deleteDbItem(req: Request, res: Response) {
-  const body = JSON.parse(req.body);
+  const body = req.body;
   addHeadersToResponse(res);
   createItem("SYSTEM", uuid.v4(), body.title, body.content)
     .then(function(data) {

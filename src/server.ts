@@ -1,9 +1,10 @@
 import * as express from "express";
-import * as bodyParser from "body-parser";
+import { json } from "body-parser";
 
 import { deleteDbItem, getDbItem, putDbItem, updateDbItem } from "./db-item";
 import { deleteAuthenticatedItem, getAuthenticatedItem, putAuthenticatedItem, updateAuthenticatedItem } from "./authenticated-item";
 import { deleteItem, getItem, putItem, updateItem } from "./local-item";
+
 
 // Constants
 const PORT = process.env.STAGE === "local" ? 8000 : 80;
@@ -12,7 +13,7 @@ const HOST = '0.0.0.0';
 
 // App handlers
 const app = express();
-const parser = bodyParser.text();
+const parser = json();
 
 app.get("/ping", (req, res) => {
   res.status(200).send();

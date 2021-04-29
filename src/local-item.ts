@@ -12,17 +12,23 @@ const items = new Map<string, Item>();
 
 export function putItem(req: Request, res: Response) {
   addHeadersToResponse(res);
-  const body = JSON.parse(req.body);
-  items.set(uuid.v4(), {
+  const body = req.body;
+  const id = uuid.v4();
+  items.set(id, {
     title: body.title,
     content: body.content
   });
-  res.status(200).send();
+  res.status(200).send({
+    itemId: id,
+    title: body.title,
+    content: body.content,
+  });
 }
+
 export function updateItem(req: Request, res: Response) {
   addHeadersToResponse(res);
-  const body = JSON.parse(req.body);
-  if (!body.itemId || !items.has(body.itemId)) {
+  const body: any = req.body;
+  if (!body || !body.itemId || !items.has(body.itemId)) {
     res.status(500).send();
   } else {
     items.set(body.itemId, {
@@ -35,8 +41,8 @@ export function updateItem(req: Request, res: Response) {
 
 export function deleteItem(req: Request, res: Response) {
   addHeadersToResponse(res);
-  const body = JSON.parse(req.body);
-  if (!body.itemId || !items.has(body.itemId)) {
+  const body: any = req.body;
+  if (!body || !body.itemId || !items.has(body.itemId)) {
     res.status(500).send();
   } else {
     items.delete(body.itemId);
@@ -46,12 +52,11 @@ export function deleteItem(req: Request, res: Response) {
 
 export function getItem(req: Request, res: Response) {
   addHeadersToResponse(res);
-  if (!!req.body && !!JSON.parse(req.body)) {
-    const body = JSON.parse(req.body);
-    if (!body.itemId || !items.has(body.itemId)) {
+  if (!!req.body && !!req.body.itemId) {
+    if (!req.body.itemId || !items.has(req.body.itemId)) {
       res.status(500).send();
     } else {
-      res.status(200).send({ itemId: body.itemId, ...items.get(body.itemId) });
+      res.status(200).send({ itemId: req.body.itemId, ...items.get(req.body.itemId) });
     }
   } else {
     const reducedItems: ({ itemId: string } & Item)[] = [];
