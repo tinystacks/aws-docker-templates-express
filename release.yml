@@ -2,7 +2,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_ENDPOINT
+      - aws ecr get-login-password | docker login --username AWS --password-stdin $ECR_ENDPOINT
       - docker pull $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME
       - docker tag $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME $ECR_IMAGE_URL:$STAGE_NAME
       - docker push $ECR_IMAGE_URL:$STAGE_NAME
