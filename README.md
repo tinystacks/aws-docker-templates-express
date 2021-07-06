@@ -1,6 +1,6 @@
 ## AWS Docker Templates - Express
 
-The AWS Docker Templates for Express from TinyStacks enable launching an [Express Node.js](https://expressjs.com/) application as a Docker container using an AWS CodePipeline pipeline. The template includes its own small Express application, enabling developers to start a new Express project immediately. Developers can also take the AWS CodePipeline-specific files in this template and use them to ship an existing Express application as a Docker image on AWS simply and easily. 
+The AWS Docker Templates for Express from TinyStacks enable launching an [Express Node.js](https://expressjs.com/) application as a Docker container using an AWS CodePipeline pipeline. The template includes its own small Express application, enabling developers to start a new Express project immediately. Developers can also take the AWS CodePipeline-specific files in this template and use them to ship an existing Express application as a Docker image on AWS. 
 
 ## License
 
@@ -31,16 +31,16 @@ The sample contains the following files:
 
 * A sample Express application, defined in the `src` directory. 
 * A Dockerfile that builds the Express file as a Docker image. 
-* A build.yml file for AWS CodeBuild that builds the image and pushes it to Amazon Elastic Container Registry (ECR). 
-* A release.yml file for AWS CodePipeline that deploys the image stored in ECR to a Amazon Elastic Container Service (ECS) cluster. 
+* A `build.yml` file for AWS CodeBuild that builds the image and pushes it to Amazon Elastic Container Registry (ECR). 
+* A `release.yml` file for AWS CodePipeline that deploys the image stored in ECR to a Amazon Elastic Container Service (ECS) cluster. 
 
-Users can use the build.yml and release.yml pipelines to create an AWS CodePipeline pipeline that compiles the latest application into a Docker image, which is then stored in an Amazon Elastic Container Registry (ECR) registry that is accessible to the user. The Express application itself is deployed onto AWS as a Docker container using the Amazon Elastic Container Service (Amazon ECS) onto one of the user's available ECS clusters. 
+Users can use the `build.yml` and `release.yml` YAML files to create an AWS CodePipeline pipeline that compiles the latest application into a Docker image, which is then stored in an Amazon Elastic Container Registry (ECR) registry that is accessible to the user. The Express application itself is deployed onto AWS as a Docker container using the Amazon Elastic Container Service (Amazon ECS) onto one of the user's available ECS clusters. 
 
 ### Sample Application
 
 The sample application is a simple CRUD (Create/Read/Update/Delete) application that can store data either in memory or in an AWS DynamoDB database table. It is written as an Express application using TypeScript. When this application runs, it presents a set of REST API endpoints that other applications can call to store data. 
 
-The application's date type, Item, contains two data fields: title and content. 
+The application's data type, Item, contains two data fields: title and content. 
 
 ```typescript
 type Item = {
@@ -53,9 +53,9 @@ The file `src/server.ts` declares the API's available endpoints. There are three
 
 | Endpoint Type  | Description |
 | ------------- | ------------- |
-| /item  | Stores the Item in memory. |
-| /db-item  | Stores the item in an AWS DynamoDB table.  |
-| /authenticated-item  | Like /db-item, but requires that the API user be logged in with an Amazon Cognity Identity that has permissions to perform CRUD operations on the underlying DynamoDB table.  |
+| `/item`  | Stores the Item in memory. |
+| `/db-item`  | Stores the item in an AWS DynamoDB table.  |
+| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognity Identity that has permissions to perform CRUD operations on the underlying DynamoDB table.  |
 
 The server uses the same endpoint for all CRUD operations, distinguishing between them with HTTP verbs: 
 
@@ -84,11 +84,15 @@ curl http://127.0.0.1/ping
 
 If the server is running, this call will return an HTTP 200 (OK) result code. 
 
-By default the server starts on port 80. You can change this to port 8000 by defining the environment variable `STAGE` and setting it to the value `local`.
+By default the server starts on port 80. You can change this to port 8000 by defining the environment variable `STAGE` and setting it to the value `local`. To bind to other ports, open the file `src/server.ts` and edit this line as needed: 
+
+```typescript
+const PORT = process.env.STAGE === "local" ? 8000 : 80;
+```
 
 #### Adding an Item in Memory
 
-To add an item in memory, call the /item endpoint with an HTTP PUT verb. This can be done on Unix/MacOS systems using cUrl: 
+To add an item in memory, call the `/item` endpoint with an HTTP PUT verb. This can be done on Unix/MacOS systems using cUrl: 
 
 ```
 curl -H "Content-Type: application/json" -X PUT -d '{"title":"my title", "content" : "my content"}' "http://127.0.0.1/item"
@@ -96,7 +100,7 @@ curl -H "Content-Type: application/json" -X PUT -d '{"title":"my title", "conten
 
 On Windows Powershell, use Invoke-WebRequest: 
 
-```
+```powershell
 $item = @{
     title="my title"
     content="my content"
@@ -109,7 +113,7 @@ The return result will be the same item but with a UUID that serves as its index
 
 #### Adding an Item to a DynamoDB Table
 
-The sample application can store items as full JSON files in a DynamoDB table. The name of the table used is retrieved from the environment variable TABLE_NAME. 
+The sample application can store items as full JSON files in a DynamoDB table. The name of the table used is retrieved from the environment variable `TABLE_NAME`. 
 
 To write to DynamoDB, the application must be running in a context in which it has been granted permissions to access the DynamoDB table.
 
@@ -141,9 +145,9 @@ If the server is running, this call will return an HTTP 200 (OK) result code.
 
 ### Build Template
 
-The build.yml file is an AWS CodeBuild file that builds and publishes the Docker image defined by the Dockerfile above. 
+The `build.yml` file is an AWS CodeBuild file that builds your Dockerfile and publishes the output to an Amazon ECR registry. 
 
-To publish to Amazon ECR, the build script first needs to obtain login credentials to 
+To publish to Amazon ECR, the build script first needs to obtain login credentials to the cluster. It does this using a combination of the AWS CLI command `aws ecr get-login-password` and the docker login command. After authentication, the script then builds your Docker image, names it, and tags it with the name `latest` to mark it as the most recent build. Finally, it performs a `docker push`, publishing the new Docker image to your Amazon ECR Docker repository.
 
 ```yml
 version: 0.2
@@ -161,13 +165,11 @@ To run this in AWS CodeBuild, your build pipeline needs to define the following 
 * **ECR_ENDPOINT**: The name of the Amazon ECR repository to publish to. This variable takes the format: *<accountnumber>*.dkr.ecr.*<aws-region>*.amazonaws.com
 * **ECR_IMAGE_URL**: The name of the Amazon ECR repository plus the name of the container you are publishing. This should take the format: *<accountnumber>*.dkr.ecr.*<aws-region>*.amazonaws.com/aws-docker-express
 
-The variable $AWS_REGION is a default global variable that will default to the same AWS region in which your build pipeline is defined. If you need to publish to an ECR repository in another region, modify this script to use a custom environment variable specifying the correct region.
-
-For more information, see [Environment variables in build environments](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html) on the AWS Web site. 
+The variable $AWS_REGION is a default global variable that will default to the same AWS region in which your build pipeline is defined. If you need to publish to an Amazon ECR repository in another region, modify this script to use a custom environment variable specifying the correct region. For more information on environment variables, see [Environment variables in build environments](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html) on the AWS Web site. 
 
 ### Release Template
 
-The release.yml file takes the build output from the build.yml files (a Docker container image in an Amazon ECR repository) and runs it within an Amazon ECS cluster to which the pipeline has access. 
+The `release.yml` file takes the build output from the `build.yml` files (a Docker container image in an Amazon ECR repository) and runs it within an Amazon ECS cluster to which the pipeline has access. 
 
 After logging in to the ECR repository using the `docker login` command, the scripts pulls down the image that was compiled and changes its tag from the name of the previous build to the name of the new build. Once the container's label has been updated, the script udpates a defined service in Amazon ECS that pulls its image from our published Docker container. 
 
@@ -183,12 +185,12 @@ phases:
       - aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --force-new-deployment
 ```
 
-In additional to the variables discussed for build.yml, the release.yml requires several environment variables defined in order to run: 
+In addition to the variables discussed for build.yml, the release.yml requires several environment variables defined in order to run: 
 
-* **PREVIOUS_STAGE_NAME**: The previous build number or build stage name. 
-* **STAGE_NAME**: The previous build number or build stage name. 
-* **SERVICE_NAME**: The name of the Amazon ECS service to run. 
-* **CLUSTER_ARN**: The name of the cluster within your Amazon ECS service to which the release script will deploy the container. 
+* **PREVIOUS_STAGE_NAME**: The previous build number or build stage name. This should be the previous Docker image tag name generated by the previous build.
+* **STAGE_NAME**: The current build number or build stage name you wish to use (e.g., `latest`). 
+* **SERVICE_NAME**: The name of the Amazon ECS service to run. You will need to define this service yourself once you have the URI to your published container. 
+* **CLUSTER_ARN**: The name of the cluster within your Amazon ECS service to which the release script will deploy the container. This should be the name of a custer that is running one or more instances of the service referenced by `SERVICE_NAME`. 
 
 ## Getting Started
 
@@ -197,9 +199,9 @@ In additional to the variables discussed for build.yml, the release.yml requires
 If you are running this sample as a new project, you will need to create the following components: 
 
 * A forked copy of this repository in your own GitHub account. 
-* An Amazon ECR repository for storing your container (the target of build.yml). 
-* An Amazon ECS container cluster for running your container (the target of release.yml). 
-* A custom IAM role and policy for AWS CodeBuild so that it can access your ECR repository and ECS cluster, as well as write out logs. Use a policy such as the one below (note: Replace <accountnumber> with your AWS account number): 
+* An Amazon ECR repository for storing your container (the target of `build.yml`). 
+* An Amazon ECS container cluster for running your container (the target of `release.yml`). 
+* A custom IAM role and policy for AWS CodeBuild so that it can access your ECR repository and ECS cluster, as well as write out logs. Use a policy such as the one below (replace &lt;accountnumber&gt; with your AWS account number): 
 
 ```json
 {
@@ -208,8 +210,8 @@ If you are running this sample as a new project, you will need to create the fol
         {
             "Effect": "Allow",
             "Resource": [
-                "arn:aws:logs:us-east-1:*<accountnumber>*:log-group:/aws/codebuild/aws-docker-express-templates",
-                "arn:aws:logs:us-east-1:*<accountnumber>*:log-group:/aws/codebuild/aws-docker-express-templates:*"
+                "arn:aws:logs:us-east-1:<accountnumber>:log-group:/aws/codebuild/aws-docker-express-templates",
+                "arn:aws:logs:us-east-1:<accountnumber>:log-group:/aws/codebuild/aws-docker-express-templates:*"
             ],
             "Action": [
                 "logs:CreateLogGroup",
@@ -240,7 +242,7 @@ If you are running this sample as a new project, you will need to create the fol
                 "codebuild:BatchPutCodeCoverages"
             ],
             "Resource": [
-                "arn:aws:codebuild:us-east-1:*<accountnumber>*:report-group/aws-docker-express-templates-*"
+                "arn:aws:codebuild:us-east-1:<accountnumber>:report-group/aws-docker-express-templates-*"
             ]
         },
         {
@@ -263,8 +265,8 @@ If you are running this sample as a new project, you will need to create the fol
 ```
 
 * A new AWS CodePipeline project. 
-* An AWS CodeBuild project added as part of the pipeline that uses this project's build.yml file. The build should be configured to pull its source from your cloned GitHub repository. The pipeline should also use the IAM role that you created for it earlier. Finally, it will also need to define all of the required variables discussed above for the build.yml file. 
-* A release step in your pipeline that uses the release.yml file. Your release pipeline will need to define the required variables discussed above for the release.yml file.
+* An AWS CodeBuild project added as part of the pipeline that uses this project's `build.yml` file. The build should be configured to pull its source from your cloned GitHub repository. The pipeline should also use the IAM role that you created for it earlier. Finally, it will also need to define all of the required variables discussed above for the `build.yml` file. 
+* A release step in your pipeline that uses the `release.yml` file. Your release pipeline will need to define the required variables discussed above for the release.yml file.
 * An Amazon ECS service that uses your published Docker container in your ECR repository as its base image. (This is the service referenced by the SERVICE_NAME variable in your release.yml file.)
 
 For a full example of creating an AWS CodeBuild project for a Docker container, see [Docker sample for CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html).
@@ -273,14 +275,20 @@ For a full example of creating an AWS CodeBuild project for a Docker container, 
 
 If you already have an existing Express application, you can use the core files included in this sample to run them on a Docker container in AWS. 
 
-If your project is already Dockerized (i.e., it has its own Dockerfile), then simply copy over the build.yml and release.yml files into the root of your existing project. 
+If your project is already Dockerized (i.e., it has its own Dockerfile), then simply copy over the `build.yml` and `release.yml` files into the root of your existing project. 
 
-If your project is not Dockerized, you will also need to copy over the Dockerfile included in this sample. You may need to change the path to your application's source and to its configuration files (the package*.json and tsconfig.json files) in the Dockerfile itself to reflect your project's file paths: 
+If your project is not Dockerized, you will also need to copy over the Dockerfile included in this sample. You may need to change the path to your application's source and to its configuration files (the `package*.json` and `tsconfig.json` files) in the Dockerfile itself to reflect your project's file paths: 
 
-```yaml
+```Dockerfile
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY src ./src
+```
+
+If your application uses a different prot than port 80, you will also need to update the `EXPOSE` line in the Dockerfile to use a different port:
+
+```Dockerfile
+EXPOSE 80
 ```
 
 ## Known Limitations
