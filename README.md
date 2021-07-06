@@ -27,6 +27,8 @@ If you wish to run just the Docker container locally, you will only need Docker.
 
 This document also assumes that you have access to an AWS account. If you do not have one, [create one before getting started](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/).
 
+If executed locally, the use of AWS DynamoDB and Amazon Cognito in the Express application will require that you have valid credentials for AWS saved on your local computer. We recommend configuring your credentials locally as a login profile and using the `AWS_PROFILE` environment variable to designate which set of credentials to use. For other options on setting AWS credentials, see [Setting Credentials in Node.js](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-credentials-node.html).
+
 Further prerequisites for running these templates on AWS are provided below.
 
 ## Overview
@@ -36,9 +38,9 @@ The sample contains the following files:
 * A sample Express application, defined in the `src` directory. 
 * A Dockerfile that builds the Express file as a Docker image. 
 * A `build.yml` file for AWS CodeBuild that builds the image and pushes it to Amazon Elastic Container Registry (ECR). 
-* A `release.yml` file for AWS CodePipeline that deploys the image stored in ECR to a Amazon Elastic Container Service (ECS) cluster. 
+* A `release.yml` file for AWS CodeBuild that deploys the image stored in ECR to a Amazon Elastic Container Service (ECS) cluster. 
 
-Users can use the `build.yml` and `release.yml` YAML files to create an AWS CodePipeline pipeline that compiles the latest application into a Docker image, which is then stored in an Amazon Elastic Container Registry (ECR) registry that is accessible to the user. The Express application itself is deployed onto AWS as a Docker container using the Amazon Elastic Container Service (Amazon ECS) onto one of the user's available ECS clusters. 
+Users can use the `build.yml` and `release.yml` YAML files to create an AWS CodePipeline pipeline that compiles the latest application into a Docker image, which is then stored in an Amazon Elastic Container Registry (ECR) registry that is accessible to the user. The Express application itself is deployed onto AWS as a Docker container using Amazon Elastic Container Service (Amazon ECS) onto one of the user's available ECS clusters. 
 
 ### Sample Application
 
@@ -59,7 +61,7 @@ The file `src/server.ts` declares the API's available endpoints. There are three
 | ------------- | ------------- |
 | `/item`  | Stores the Item in memory. |
 | `/db-item`  | Stores the item in an AWS DynamoDB table.  |
-| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognity Identity that has permissions to perform CRUD operations on the underlying DynamoDB table.  |
+| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognity Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
 
 The server uses the same endpoint for all CRUD operations, distinguishing between them with HTTP verbs: 
 
@@ -173,7 +175,7 @@ The variable `AWS_REGION` is a default global variable that will default to the 
 
 ### Release Template
 
-The `release.yml` file takes the build output from the `build.yml` files (a Docker container image in an Amazon ECR repository) and runs it within an Amazon ECS cluster to which the pipeline has access. 
+The `release.yml` file is another AWS CodeBuild file that takes the build output from the `build.yml` files (a Docker container image in an Amazon ECR repository) and runs it within an Amazon ECS cluster to which the pipeline has access. 
 
 After logging in to the ECR repository using the `docker login` command, the script pulls down the image that was compiled and changes its tag from the name of the previous build to the name of the new build. Once the container's label has been updated, the script updates a defined service in Amazon ECS that pulls its image from our published Docker container. 
 
@@ -270,7 +272,7 @@ If you are running this sample as a new project, you will need to create the fol
 
 * A new AWS CodePipeline project. 
 * An AWS CodeBuild project added as part of the pipeline that uses this project's `build.yml` file. The build should be configured to pull its source from your cloned GitHub repository. The pipeline should also use the IAM role that you created for it earlier. Finally, it will also need to define all of the required variables discussed above for the `build.yml` file. 
-* A release step in your pipeline that uses the `release.yml` file. Your release pipeline will need to define the required variables discussed above for the release.yml file.
+* An AWS CodeBuild project added as part of the pipeline that uses this project's `build.yml` file. This project will need to define the required variables discussed above for the release.yml file.
 * An Amazon ECS service that uses your published Docker container in your ECR repository as its base image. (This is the service referenced by the SERVICE_NAME variable in your release.yml file.)
 
 For a full example of creating an AWS CodeBuild project for a Docker container, see [Docker sample for CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker.html).
