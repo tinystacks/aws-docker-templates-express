@@ -140,7 +140,7 @@ Once built, run the Docker command locally, mapping port 8080 on your host machi
 docker run -p 8080:80 -d tinystacks/express-crud-app:latest
 ```
 
-To test that the server is running, test its `/ping` endpoint from the command line. This time, you will change the port to 8080 to test that it's running fromt he running Docker container: 
+To test that the server is running, test its `/ping` endpoint from the command line. This time, you will change the port to 8080 to test that it's running from the running Docker container: 
 
 ```
 curl http://127.0.0.1:8080/ping
