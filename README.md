@@ -213,7 +213,7 @@ COPY tsconfig.json ./
 COPY src ./src
 ```
 
-If your application uses a different prot than port 80, you will also need to update the `EXPOSE` line in the Dockerfile to use a different port:
+If your application uses a different port than port 80, you will also need to update the `EXPOSE` line in the Dockerfile to use a different port:
 
 ```Dockerfile
 EXPOSE 80
