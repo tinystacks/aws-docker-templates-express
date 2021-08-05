@@ -60,7 +60,7 @@ The file `src/server.ts` declares the API's available endpoints. There are three
 | ------------- | ------------- |
 | `/item`  | Stores the Item in memory. |
 | `/db-item`  | Stores the item in an AWS DynamoDB table.  |
-| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognity Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
+| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognito Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
 
 The server uses the same endpoint for all CRUD operations, distinguishing between them with HTTP verbs: 
 
