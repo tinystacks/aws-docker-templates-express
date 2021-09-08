@@ -58,9 +58,10 @@ The file `src/server.ts` declares the API's available endpoints. There are three
 
 | Endpoint Type  | Description |
 | ------------- | ------------- |
-| `/item`  | Stores the Item in memory. |
-| `/db-item`  | Stores the item in an AWS DynamoDB table.  |
-| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognito Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
+
+| `/local-item`  | Stores the Item in memory. |
+| `/dynamodb-item`  | Stores the item in an AWS DynamoDB table.  |
+| `/authenticated-item`  | Like `/dynamodb-item`, but requires that the API user be logged in with an Amazon Cognity Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
 
 The server uses the same endpoint for all CRUD operations, distinguishing between them with HTTP verbs: 
 
@@ -95,9 +96,9 @@ By default the server starts on port 80. You can change this to port 8000 by def
 const PORT = process.env.STAGE === "local" ? 8000 : 80;
 ```
 
-#### Adding an Item in Memory
+#### Adding a local Item in Memory
 
-To add an item in memory, call the `/item` endpoint with an HTTP PUT verb. This can be done on Unix/MacOS systems using cUrl: 
+To add a local item in memory, call the `/local-item` endpoint with an HTTP PUT verb. This can be done on Unix/MacOS systems using cUrl: 
 
 ```
 curl -H "Content-Type: application/json" -X PUT -d '{"title":"my title", "content" : "my content"}' "http://127.0.0.1/item"
@@ -111,7 +112,7 @@ $item = @{
     content="my content"
 }
 $json = $item |convertto-json
-$response = Invoke-WebRequest 'http://127.0.0.1/item' -Method Put -Body $json -ContentType 'application/json'
+$response = Invoke-WebRequest 'http://127.0.0.1/local-item' -Method Put -Body $json -ContentType 'application/json'
 ```
 
 The return result will be the same item but with a UUID that serves as its index key into the in-memory dictionary where the entry is stored. 

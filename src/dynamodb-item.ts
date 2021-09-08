@@ -3,7 +3,7 @@ import { createItem, getItem, listItems } from "./aws-helpers";
 import { addHeadersToResponse } from "./server-helpers";
 import * as uuid from "uuid";
 
-export async function getDbItem(req: Request, res: Response) {
+export async function getDynamoDbItem(req: Request, res: Response) {
   addHeadersToResponse(res);
   let promise;
   const body = req.body;
@@ -22,7 +22,7 @@ export async function getDbItem(req: Request, res: Response) {
     });
 }
 
-export async function putDbItem(req: Request, res: Response) {
+export async function putDynamoDbItem(req: Request, res: Response) {
   const body = req.body;
   addHeadersToResponse(res);
   createItem("SYSTEM", uuid.v4(), body.title, body.content)
@@ -35,7 +35,7 @@ export async function putDbItem(req: Request, res: Response) {
     });
 }
 
-export async function updateDbItem(req: Request, res: Response) {
+export async function updateDynamoDbItem(req: Request, res: Response) {
   const body = req.body;
   addHeadersToResponse(res);
   createItem("SYSTEM", body.itemId, body.title, body.content)
@@ -48,7 +48,7 @@ export async function updateDbItem(req: Request, res: Response) {
     });
 }
 
-export async function deleteDbItem(req: Request, res: Response) {
+export async function deleteDynamoDbItem(req: Request, res: Response) {
   const body = req.body;
   addHeadersToResponse(res);
   createItem("SYSTEM", uuid.v4(), body.title, body.content)
