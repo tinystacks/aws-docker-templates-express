@@ -60,7 +60,7 @@ The file `src/server.ts` declares the API's available endpoints. There are three
 | ------------- | ------------- |
 | `/item`  | Stores the Item in memory. |
 | `/db-item`  | Stores the item in an AWS DynamoDB table.  |
-| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognity Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
+| `/authenticated-item`  | Like `/db-item`, but requires that the API user be logged in with an Amazon Cognito Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
 
 The server uses the same endpoint for all CRUD operations, distinguishing between them with HTTP verbs: 
 
@@ -140,7 +140,7 @@ Once built, run the Docker command locally, mapping port 8080 on your host machi
 docker run -p 8080:80 -d tinystacks/express-crud-app:latest
 ```
 
-To test that the server is running, test its `/ping` endpoint from the command line. This time, you will change the port to 8080 to test that it's running fromt he running Docker container: 
+To test that the server is running, test its `/ping` endpoint from the command line. This time, you will change the port to 8080 to test that it's running from the running Docker container: 
 
 ```
 curl http://127.0.0.1:8080/ping
@@ -213,7 +213,7 @@ COPY tsconfig.json ./
 COPY src ./src
 ```
 
-If your application uses a different prot than port 80, you will also need to update the `EXPOSE` line in the Dockerfile to use a different port:
+If your application uses a different port than port 80, you will also need to update the `EXPOSE` line in the Dockerfile to use a different port:
 
 ```Dockerfile
 EXPOSE 80
