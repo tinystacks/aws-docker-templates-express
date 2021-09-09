@@ -61,6 +61,7 @@ The file `src/server.ts` declares the API's available endpoints. There are three
 
 | `/local-item`  | Stores the Item in memory. |
 | `/dynamodb-item`  | Stores the item in an AWS DynamoDB table.  |
+| `/postgres-item`  | Stores the item in a Postgres table.  |
 | `/authenticated-item`  | Like `/dynamodb-item`, but requires that the API user be logged in with an Amazon Cognity Identity. All records saved with this API are saved with the user's Cognito ID. When performing read and update operations with this API, users can only access the records that they created. |
 
 The server uses the same endpoint for all CRUD operations, distinguishing between them with HTTP verbs: 

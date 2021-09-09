@@ -1,9 +1,11 @@
-const pgCreds = {
-  user: process.env.PG_USER,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  hostname: process.env.PG_HOSTNAME,
-  port: process.env.PG_PORT
-}
+import { Pool } from 'pg';
 
-export { pgCreds }
+const pool = new Pool({
+  host: process.env.PG_HOST || 'localhost',
+  port: parseInt(process.env.PG_PORT || '5433'),
+  user: process.env.PG_USER || 'postgres',
+  password: process.env.PG_PASSWORD || 'postgres',
+  database: process.env.PG_DATABASE || 'postgres',
+});
+
+export { pool };

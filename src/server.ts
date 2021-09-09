@@ -11,7 +11,6 @@ import { deleteItem, getItem, putItem, updateItem } from "./local-item";
 const PORT = process.env.STAGE === "local" ? 8000 : 80;
 const HOST = '0.0.0.0';
 
-
 // App handlers
 const app = express();
 const parser = json();
@@ -30,10 +29,11 @@ app.post('/dynamodb-item', parser, updateDynamoDbItem);
 app.get('/dynamodb-item', parser, getDynamoDbItem);
 app.delete('/dynamodb-item', parser, deleteDynamoDbItem);
 
+app.get('/postgresql-item/:id', parser, getPostgresDbItem);
 app.get('/postgresql-item', parser, getPostgresDbItem);
 app.post('/postgresql-item', parser, createPostgresDbItem);
-app.put('/postgresql-item', parser, updatePostgresItem);
-app.delete('/postgresql-item', parser, deletePostgresItem);
+app.put('/postgresql-item/:id', parser, updatePostgresItem);
+app.delete('/postgresql-item/:id', parser, deletePostgresItem);
 
 app.put('/authenticated-item', parser, putAuthenticatedItem);
 app.get('/authenticated-item', parser, getAuthenticatedItem);
