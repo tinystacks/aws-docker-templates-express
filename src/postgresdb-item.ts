@@ -18,7 +18,7 @@ export async function getPostgresDbItem(req: Request, res: Response) {
   if (req.params.id == undefined) {
     try {
       const client = await pool.connect();
-      const toRet = await client.query('SELECT * from products');
+      const toRet = await client.query('SELECT * from items');
       client.release();
       return res.status(200).json(toRet.rows);
     } catch (error) {
@@ -27,7 +27,7 @@ export async function getPostgresDbItem(req: Request, res: Response) {
   } else {
     try {
       const client = await pool.connect();
-      const toRet = await client.query('SELECT * from products WHERE id = $1', [req.params.id]);
+      const toRet = await client.query('SELECT * from items WHERE id = $1', [req.params.id]);
       client.release();
       return res.status(200).json(toRet.rows[0]);
     } catch (error) {
@@ -51,7 +51,7 @@ export async function createPostgresDbItem(req: Request, res: Response) {
   try {
     const client = await pool.connect();
     await client.query('CREATE TABLE IF NOT EXISTS "items" ("id" SERIAL PRIMARY KEY,"title" varchar(30),"content" varchar(30));');
-    await client.query('INSERT INTO products (title, content) VALUES ($1,$2)', [req.body.title, req.body.content]);
+    await client.query('INSERT INTO items (title, content) VALUES ($1,$2)', [req.body.title, req.body.content]);
     await client.release();
     return res.status(201).json(req.body);
   } catch (error) {
@@ -76,7 +76,7 @@ export async function updatePostgresItem(req: Request, res: Response) {
     console.log(req.params.id);
 
     const client = await pool.connect();
-    await client.query(`UPDATE products SET title = $1 WHERE id = $2`, [req.body.title, req.params.id]);
+    await client.query(`UPDATE items SET title = $1 WHERE id = $2`, [req.body.title, req.params.id]);
     client.release();
     return res.status(200).json('Updated id ' + req.params.id);
   } catch (error) {
@@ -99,7 +99,7 @@ export async function deletePostgresItem(req: Request, res: Response) {
   try {
     console.log(req.params.id);
     const client = await pool.connect();
-    await client.query('DELETE from products WHERE id = $1', [req.params.id]);
+    await client.query('DELETE from items WHERE id = $1', [req.params.id]);
     client.release();
     return res.status(200).json('Removed id ' + req.params.id);
   } catch (error) {
