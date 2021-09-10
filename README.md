@@ -97,9 +97,9 @@ By default the server starts on port 80. You can change this to port 8000 by def
 const PORT = process.env.STAGE === "local" ? 8000 : 80;
 ```
 
-#### Adding a local Item in Memory
+#### Adding an Item in Memory
 
-To add a local item in memory, call the `/local-item` endpoint with an HTTP PUT verb. This can be done on Unix/MacOS systems using cUrl: 
+To add a an item in memory, call the `/local-item` endpoint with an HTTP PUT verb. This can be done on Unix/MacOS systems using cUrl: 
 
 ```
 curl -H "Content-Type: application/json" -X PUT -d '{"title":"my title", "content" : "my content"}' "http://127.0.0.1/item"
