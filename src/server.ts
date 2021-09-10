@@ -35,9 +35,9 @@ app.post('/postgresql-item', parser, createPostgresDbItem);
 app.put('/postgresql-item/:id', parser, updatePostgresItem);
 app.delete('/postgresql-item/:id', parser, deletePostgresItem);
 
-app.put('/authenticated-item', parser, putAuthenticatedItem);
-app.get('/authenticated-item', parser, getAuthenticatedItem);
-app.post('/authenticated-item', parser, updateAuthenticatedItem);
-app.delete('/authenticated-item', parser, deleteAuthenticatedItem);
+app.put('/authenticated-dynamodb-item', parser, putAuthenticatedItem);
+app.get('/authenticated-dynamodb-item', parser, getAuthenticatedItem);
+app.post('/authenticated-dynamodb-item', parser, updateAuthenticatedItem);
+app.delete('/authenticated-dynamodb-item', parser, deleteAuthenticatedItem);
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
