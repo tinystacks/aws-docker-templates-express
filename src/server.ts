@@ -31,8 +31,8 @@ app.delete('/dynamodb-item', parser, deleteDynamoDbItem);
 
 app.get('/postgresql-item/:id', parser, getPostgresDbItem);
 app.get('/postgresql-item', parser, getPostgresDbItem);
-app.post('/postgresql-item', parser, createPostgresDbItem);
-app.put('/postgresql-item/:id', parser, updatePostgresItem);
+app.put('/postgresql-item', parser, createPostgresDbItem);
+app.post('/postgresql-item/:id', parser, updatePostgresItem);
 app.delete('/postgresql-item/:id', parser, deletePostgresItem);
 
 app.put('/authenticated-dynamodb-item', parser, putAuthenticatedItem);
