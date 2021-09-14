@@ -15,31 +15,27 @@ import { pool } from './config/postgres';
 export async function getPostgresDbItem(req: Request, res: Response) {
   addHeadersToResponse(res);
 
-  if (req.params.id == undefined) {
-    try {
-      const client = await pool.connect();
+  try {
+    const client = await pool.connect();
+    let queryResult;
+    if (!req.params.id) {
       const toRet = await client.query('SELECT * from items');
-      client.release();
-      return res.status(200).json(toRet.rows);
-    } catch (error) {
-      return res.status(500).json('Error on getPostgresDbItem' + error);
-    }
-  } else {
-    try {
-      const client = await pool.connect();
+      queryResult = toRet.rows;
+    } else {
       const toRet = await client.query('SELECT * from items WHERE id = $1', [req.params.id]);
-      client.release();
-      return res.status(200).json(toRet.rows[0]);
-    } catch (error) {
-      return res.status(500).json('Error on getPostgresDbItem' + error);
+      queryResult = toRet.rows[0];
     }
+    client.release();
+    return res.status(200).json(queryResult);
+  } catch (error) {
+    return res.status(500).json('Error on getPostgresDbItem' + error);
   }
 }
 
 /**
  * Create a new Item
  * 
- * @verb POST
+ * @verb PUT
  * @route [/postgresql-item/]
  * 
  * @body The body wihch contains the values, in JSON format
@@ -62,7 +58,7 @@ export async function createPostgresDbItem(req: Request, res: Response) {
 /**
  * Update an existing Item
  * 
- * @verb PUT
+ * @verb POST
  * @route [/postgresql-item/:id]
  * 
  * @body The body wihch contains the updated values, in JSON format
