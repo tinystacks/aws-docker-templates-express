@@ -6,4 +6,7 @@ phases:
       - docker pull $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME
       - docker tag $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME $ECR_IMAGE_URL:$STAGE_NAME
       - docker push $ECR_IMAGE_URL:$STAGE_NAME
+  post_build:
+    on-failure: CONTINUE
+    commands:
       - aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --force-new-deployment
