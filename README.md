@@ -58,7 +58,6 @@ The file `src/server.ts` declares the API's available endpoints. There are three
 
 | Endpoint Type  | Description |
 | ------------- | ------------- |
-
 | `/local-item`  | Stores the Item in memory. |
 | `/dynamodb-item`  | Stores the item in an AWS DynamoDB table.  |
 | `/postgres-item`  | Stores the item in a Postgres table.  |
