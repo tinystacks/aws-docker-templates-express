@@ -112,7 +112,7 @@ $item = @{
     content="my content"
 }
 $json = $item |convertto-json
-$response = Invoke-WebRequest 'http://127.0.0.1/local-item' -Method Put -Body $json -ContentType 'application/json'
+$response = Invoke-WebRequest 'http://127.0.0.1/local-item' -Method Put -Body $json -ContentType 'application/json' -UseBasicParsing
 ```
 
 The return result will be the same item but with a UUID that serves as its index key into the in-memory dictionary where the entry is stored. 
