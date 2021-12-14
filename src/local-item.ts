@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { toEditorSettings } from "typescript";
 import * as uuid from "uuid";
 import { addHeadersToResponse } from "./server-helpers";
 
@@ -8,7 +7,22 @@ type Item = {
   content: string;
 };
 
-const items = new Map<string, Item>();
+const items = new Map<any, any>();
+
+export function getItem(req: Request, res: Response) {
+  addHeadersToResponse(res);
+  if (req.query.itemId) {
+    const toReturn = items.get(req.query.itemId);
+    toReturn.itemId = req.query.itemId;
+    return res.status(200).json(toReturn);
+  } else {
+    const reducedItems: ({ itemId: string } & Item)[] = [];
+    items.forEach((value: Item, key: string) => {
+      reducedItems.push({ itemId: key, ...value });
+    })
+    res.status(200).send(reducedItems);
+  }
+}
 
 export function putItem(req: Request, res: Response) {
   addHeadersToResponse(res);
@@ -19,7 +33,7 @@ export function putItem(req: Request, res: Response) {
     content: body.content
   });
   res.status(200).send({
-    itemId: id,
+    id: id,
     title: body.title,
     content: body.content,
   });
@@ -28,10 +42,11 @@ export function putItem(req: Request, res: Response) {
 export function updateItem(req: Request, res: Response) {
   addHeadersToResponse(res);
   const body: any = req.body;
-  if (!body || !body.itemId || !items.has(body.itemId)) {
+  const id = req.params.id;
+  if (!body || !id) {
     res.status(500).send();
   } else {
-    items.set(body.itemId, {
+    items.set(id, {
       title: body.title,
       content: body.content
     });
@@ -42,27 +57,11 @@ export function updateItem(req: Request, res: Response) {
 export function deleteItem(req: Request, res: Response) {
   addHeadersToResponse(res);
   const body: any = req.body;
-  if (!body || !body.itemId || !items.has(body.itemId)) {
+  const id = req.params.id;
+  if (!body || !body.id) {
     res.status(500).send();
   } else {
-    items.delete(body.itemId);
+    items.delete(body.id);
     res.status(200).send();
-  }
-}
-
-export function getItem(req: Request, res: Response) {
-  addHeadersToResponse(res);
-  if (!!req.body && !!req.body.itemId) {
-    if (!req.body.itemId || !items.has(req.body.itemId)) {
-      res.status(500).send();
-    } else {
-      res.status(200).send({ itemId: req.body.itemId, ...items.get(req.body.itemId) });
-    }
-  } else {
-    const reducedItems: ({ itemId: string } & Item)[] = [];
-    items.forEach((value: Item, key: string) => {
-      reducedItems.push({ itemId: key, ...value });
-    })
-    res.status(200).send(reducedItems);
   }
 }
