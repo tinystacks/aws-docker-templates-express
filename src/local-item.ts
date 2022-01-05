@@ -16,12 +16,18 @@ export function getItem(req: Request, res: Response) {
     toReturn.itemId = req.query.itemId;
     return res.status(200).json(toReturn);
   } else {
-    const reducedItems: ({ itemId: string } & Item)[] = [];
-    items.forEach((value: Item, key: string) => {
-      reducedItems.push({ itemId: key, ...value });
-    })
-    res.status(200).send(reducedItems);
+    res.status(400).json("No itemId provided");
   }
+}
+
+// return the list of all items
+export function listItems(req: Request, res: Response) {
+  addHeadersToResponse(res);
+  const reducedItems: ({ itemId: string } & Item)[] = [];
+  items.forEach((value: Item, key: string) => {
+    reducedItems.push({ itemId: key, ...value });
+  })
+  res.status(200).send(reducedItems);
 }
 
 export function putItem(req: Request, res: Response) {

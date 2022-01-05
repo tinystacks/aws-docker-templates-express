@@ -3,7 +3,7 @@ import { json } from "body-parser";
 
 import { deleteDynamoDbItem, getDynamoDbItem, putDynamoDbItem, updateDynamoDbItem } from "./dynamodb-item";
 import { deletePostgresItem, getPostgresDbItem, createPostgresDbItem, updatePostgresItem  } from "./postgresdb-item";
-import { deleteItem, getItem, putItem, updateItem } from "./local-item";
+import { deleteItem, getItem, putItem, updateItem, listItems } from "./local-item";
 
 
 // Constants
@@ -22,7 +22,8 @@ app.get("/ping", (req:any, res:any) => {
   res.status(200).send("pong");
 });
 
-app.get('/local-item', parser, getItem);
+app.get('/local-item/:id', parser, getItem);
+app.get('/local-item', parser, listItems);
 app.post('/local-item', parser, putItem);
 app.put('/local-item/:id', parser, updateItem);
 app.delete('/local-item', parser, deleteItem);
