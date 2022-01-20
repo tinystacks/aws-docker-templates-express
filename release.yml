@@ -9,5 +9,4 @@ phases:
   post_build:
     on-failure: CONTINUE
     commands:
-      - region="${STAGE_REGION:-$AWS_REGION}" 
-      - aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --region $region --force-new-deployment
+      - aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --force-new-deployment
