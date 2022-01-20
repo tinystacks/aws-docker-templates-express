@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { addHeadersToResponse } from './server-helpers';
 import { pool } from './config/postgres';
 
-
 /**
  * Get All or a single item 
  * 
@@ -17,6 +16,7 @@ export async function getPostgresDbItem(req: Request, res: Response) {
 
   try {
     const client = await pool.connect();
+    await client.query('CREATE TABLE IF NOT EXISTS "items" ("id" SERIAL PRIMARY KEY,"title" varchar(30),"content" varchar(30));');
     let queryResult;
     if (!req.params.id) {
       const toRet = await client.query('SELECT * from items');
@@ -69,9 +69,8 @@ export async function updatePostgresItem(req: Request, res: Response) {
   addHeadersToResponse(res);
 
   try {
-    console.log(req.params.id);
-
     const client = await pool.connect();
+    await client.query('CREATE TABLE IF NOT EXISTS "items" ("id" SERIAL PRIMARY KEY,"title" varchar(30),"content" varchar(30));');
     await client.query(`UPDATE items SET title = $1 WHERE id = $2`, [req.body.title, req.params.id]);
     client.release();
     return res.status(200).json('Updated id ' + req.params.id);
@@ -95,6 +94,7 @@ export async function deletePostgresItem(req: Request, res: Response) {
   try {
     console.log(req.params.id);
     const client = await pool.connect();
+    await client.query('CREATE TABLE IF NOT EXISTS "items" ("id" SERIAL PRIMARY KEY,"title" varchar(30),"content" varchar(30));');
     await client.query('DELETE from items WHERE id = $1', [req.params.id]);
     client.release();
     return res.status(200).json('Removed id ' + req.params.id);
