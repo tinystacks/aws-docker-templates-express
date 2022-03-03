@@ -10,4 +10,5 @@ phases:
     on-failure: CONTINUE
     commands:
       - region="${STAGE_REGION:-$AWS_REGION}" 
-      - aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --region $region --force-new-deployment
+      - echo $SERVICE_NAME
+      - if [ -z "$SERVICE_NAME" ] || [ "$SERVICE_NAME" == "placeholder" ]; then echo 'Service is not ready yet. Repository tagged correctly, exiting now'; else  aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --region $region --force-new-deployment; fi
