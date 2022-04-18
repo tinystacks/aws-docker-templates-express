@@ -10,4 +10,18 @@ phases:
     on-failure: CONTINUE
     commands:
       - region="${STAGE_REGION:-$AWS_REGION}" 
-      - if [ -z "$SERVICE_NAME" ] || [ "$SERVICE_NAME" == "placeholder" ]; then echo 'Service is not ready yet. Repository tagged correctly, exiting now'; else  aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --region $region --force-new-deployment; fi
+      - |
+        if [ ! -z "$LAMBDA_FUNCTION_NAME" -a  "$LAMBDA_FUNCTION_NAME" != "placeholder" ];
+          then
+            aws lambda update-function-code --function-name "$LAMBDA_FUNCTION_NAME" --image-uri "$ECR_IMAGE_URL:$STAGE_NAME" --region $region
+            imageSha=$(docker images --no-trunc --quiet $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME);
+            aws lambda tag-resource --resource "$LAMBDA_FUNCTION_ARN" --tags "IMAGE_SHA=$imageSha"
+          else
+            echo 'Not a serverless stage'
+            if [ -z "$SERVICE_NAME" ] || [ "$SERVICE_NAME" == "placeholder" ];
+              then
+                echo 'Service is not ready yet. Repository tagged correctly, exiting now';
+              else
+                aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --region $region --force-new-deployment;
+            fi
+        fi
