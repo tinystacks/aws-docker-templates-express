@@ -90,10 +90,10 @@ curl http://127.0.0.1/ping
 
 If the server is running, this call will return an HTTP 200 (OK) result code. 
 
-By default the server starts on port 80. You can change this to port 8000 by defining the environment variable `STAGE` and setting it to the value `local`. To bind to other ports, open the file `src/server.ts` and edit this line as needed: 
+By default the server starts on port 8000. You can change this to port 8000 by defining the environment variable `STAGE` and setting it to the value `local`. To bind to other ports, open the file `src/server.ts` and edit this line as needed: 
 
 ```typescript
-const PORT = process.env.STAGE === "local" ? 8000 : 80;
+const PORT = process.env.STAGE === "local" ? 8000 : 8000;
 ```
 
 #### Adding an Item in Memory
@@ -127,7 +127,7 @@ To write to DynamoDB, the application must be running in a context in which it h
 
 The Dockerfile bundles the Express app (your app or the included sample app) onto a new Docker container image and runs the Express server.
 
-The Docker image itself derives from [Bitnami's Node.js image](https://gallery.ecr.aws/bitnami/node), which is made freely available on the [Amazon ECR Public Gallery](https://gallery.ecr.aws/) and is based on minideb, a minimalist Linux distribution. The Dockerfile uses the Node Package Manager (NPM) to install the Node.js packages required for the Express application as defined in the package-lock.json file. It then copies over the application's files and runs the Express server (as defined in the `src/server.ts` file) on port 80 of the container. 
+The Docker image itself derives from [Bitnami's Node.js image](https://gallery.ecr.aws/bitnami/node), which is made freely available on the [Amazon ECR Public Gallery](https://gallery.ecr.aws/) and is based on minideb, a minimalist Linux distribution. The Dockerfile uses the Node Package Manager (NPM) to install the Node.js packages required for the Express application as defined in the package-lock.json file. It then copies over the application's files and runs the Express server (as defined in the `src/server.ts` file) on port 8000 of the container. 
 
 If you have Docker installed, you can build and try out the sample application locally. Open a command prompt to the directory containing the Dockerfile and run the following command: 
 
@@ -135,10 +135,10 @@ If you have Docker installed, you can build and try out the sample application l
 docker build -t tinystacks/express-crud-app:latest .
 ```
 
-Once built, run the Docker command locally, mapping port 8080 on your host machine to port 80 on the container: 
+Once built, run the Docker command locally, mapping port 8080 on your host machine to port 8000 on the container: 
 
 ```
-docker run -p 8080:80 -d tinystacks/express-crud-app:latest
+docker run -p 8080:8000 -d tinystacks/express-crud-app:latest
 ```
 
 To test that the server is running, test its `/ping` endpoint from the command line. This time, you will change the port to 8080 to test that it's running from the running Docker container: 
@@ -214,10 +214,10 @@ COPY tsconfig.json ./
 COPY src ./src
 ```
 
-If your application uses a different port than port 80, you will also need to update the `EXPOSE` line in the Dockerfile to use a different port:
+If your application uses a different port than port 8000, you will also need to update the `EXPOSE` line in the Dockerfile to use a different port:
 
 ```Dockerfile
-EXPOSE 80
+EXPOSE 8000
 ```
 
 ## Known Limitations

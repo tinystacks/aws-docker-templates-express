@@ -17,5 +17,5 @@ RUN npm run build
 # Bundle app source
 COPY . .
 
-EXPOSE 80
+EXPOSE 8000
 CMD [ "/opt/tinystacks-secret-env-vars-wrapper", "node", "built/server.js" ]

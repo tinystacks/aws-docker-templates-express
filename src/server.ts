@@ -7,7 +7,7 @@ import { deleteItem, getItem, putItem, updateItem, listItems } from "./local-ite
 
 
 // Constants
-const PORT = process.env.STAGE === "local" ? 8000 : 80;
+const PORT = 8000;
 const HOST = '0.0.0.0';
 
 // App handlers
