@@ -90,10 +90,10 @@ curl http://127.0.0.1/ping
 
 If the server is running, this call will return an HTTP 200 (OK) result code. 
 
-By default the server starts on port 8000. You can change this to port 8000 by defining the environment variable `STAGE` and setting it to the value `local`. To bind to other ports, open the file `src/server.ts` and edit this line as needed: 
+By default the server starts on port 8000. To bind to other ports, open the file `src/server.ts` and edit this line as needed: 
 
 ```typescript
-const PORT = process.env.STAGE === "local" ? 8000 : 8000;
+const PORT = 8000;
 ```
 
 #### Adding an Item in Memory
