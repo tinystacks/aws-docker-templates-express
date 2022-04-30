@@ -22,6 +22,10 @@ app.get("/ping", (req:any, res:any) => {
   res.status(200).send("pong");
 });
 
+app.get("/healthy", (req:any, res:any) => {
+  res.status(200).send("healthy");
+});
+
 app.get('/local-item/:id', parser, getItem);
 app.get('/local-item', parser, listItems);
 app.post('/local-item', parser, putItem);
