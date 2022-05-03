@@ -1,4 +1,6 @@
 FROM public.ecr.aws/bitnami/node:15
+COPY --from=public.ecr.aws/tinystacks/secret-env-vars-wrapper:latest-x86 /opt /opt
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.3.2-x86_64 /lambda-adapter /opt/extensions/lambda-adapter
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -15,5 +17,5 @@ RUN npm run build
 # Bundle app source
 COPY . .
 
-EXPOSE 80
-CMD [ "node", "built/server.js" ]
+EXPOSE 8000
+CMD [ "/opt/tinystacks-secret-env-vars-wrapper", "node", "built/server.js" ]
