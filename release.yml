@@ -6,6 +6,13 @@ phases:
       - docker pull $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME
       - docker tag $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME $ECR_IMAGE_URL:$STAGE_NAME
       - docker push $ECR_IMAGE_URL:$STAGE_NAME
+      - |
+        if [ ! -z "$REGIONAL_ECR_ENDPOINT" -a ! -z "$REGIONAL_ECR_IMAGE_URL" ];
+          then
+            docker login -u AWS -p $(aws ecr get-login-password --region $STAGE_REGION) $REGIONAL_ECR_ENDPOINT
+            docker tag $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME $REGIONAL_ECR_IMAGE_URL:$STAGE_NAME
+            docker push $REGIONAL_ECR_IMAGE_URL:$STAGE_NAME
+        fi
   post_build:
     on-failure: CONTINUE
     commands:
@@ -13,9 +20,10 @@ phases:
       - |
         if [ ! -z "$LAMBDA_FUNCTION_NAME" -a  "$LAMBDA_FUNCTION_NAME" != "placeholder" ];
           then
-            aws lambda update-function-code --function-name "$LAMBDA_FUNCTION_NAME" --image-uri "$ECR_IMAGE_URL:$STAGE_NAME" --region $region
-            imageSha=$(docker images --no-trunc --quiet $ECR_IMAGE_URL:$PREVIOUS_STAGE_NAME);
-            aws lambda tag-resource --resource "$LAMBDA_FUNCTION_ARN" --tags "IMAGE_SHA=$imageSha"
+            imageUrl="${REGIONAL_ECR_IMAGE_URL:-$ECR_IMAGE_URL}" 
+            aws lambda update-function-code --function-name "$LAMBDA_FUNCTION_NAME" --image-uri "$imageUrl:$STAGE_NAME" --region $region
+            imageSha=$(docker images --no-trunc --quiet $imageUrl:$PREVIOUS_STAGE_NAME);
+            aws lambda tag-resource --resource "$LAMBDA_FUNCTION_ARN" --tags "IMAGE_SHA=$imageSha" --region $region
           else
             echo 'Not a serverless stage'
             if [ -z "$SERVICE_NAME" ] || [ "$SERVICE_NAME" == "placeholder" ];
