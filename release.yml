@@ -30,6 +30,12 @@ phases:
               then
                 echo 'Service is not ready yet. Repository tagged correctly, exiting now';
               else
-                aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --region $region --force-new-deployment;
+                TASK_ARN=$(aws ecs describe-services --cluster $CLUSTER_ARN --services $SERVICE_NAME | jq -r '.services[].taskDefinition') 
+                CONTAINER_DEFINITIONS=$(aws ecs describe-task-definition --task-definition  "$TASK_ARN" | jq -r '.taskDefinition.containerDefinitions')
+                FAMILY=$(aws ecs describe-task-definition --task-definition  "$TASK_ARN" | jq -r '.taskDefinition.family')
+                COMMIT_SHA=$ECR_IMAGE_URL:$(git rev-parse HEAD)    
+                UPDATED_CONTAINER=$(echo $CONTAINER_DEFINITIONS | jq --arg COMMIT_SHA "$COMMIT_SHA" 'map(.image = $COMMIT_SHA)')
+                NEW_DEF_ARN=$(aws ecs register-task-definition --family "$FAMILY" --container-definitions "$UPDATED_CONTAINER" --task-role-arn $TASK_ROLE_ARN | jq -r '.taskDefinition.taskDefinitionArn')
+                aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --task-definition "$NEW_DEF_ARN" --force-new-deployment
             fi
         fi
