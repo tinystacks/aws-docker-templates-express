@@ -31,8 +31,9 @@ phases:
                 echo 'Service is not ready yet. Repository tagged correctly, exiting now';
               else
                 TASK_ARN=$(aws ecs describe-services --cluster $CLUSTER_ARN --services $SERVICE_NAME | jq -r '.services[].taskDefinition') 
-                CONTAINER_DEFINITIONS=$(aws ecs describe-task-definition --task-definition  "$TASK_ARN" | jq -r '.taskDefinition.containerDefinitions')
-                FAMILY=$(aws ecs describe-task-definition --task-definition  "$TASK_ARN" | jq -r '.taskDefinition.family')
+                TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition  "$TASK_ARN" | jq -r '.taskDefinition')
+                CONTAINER_DEFINITIONS=$(jq -r '.containerDefinitions' <<< $TASK_DEFINITION)
+                FAMILY=$(jq -r '.family' <<< $TASK_DEFINITION)
                 COMMIT_SHA=$ECR_IMAGE_URL:$(git rev-parse HEAD)    
                 UPDATED_CONTAINER=$(echo $CONTAINER_DEFINITIONS | jq --arg COMMIT_SHA "$COMMIT_SHA" 'map(.image = $COMMIT_SHA)')
                 NEW_DEF_ARN=$(aws ecs register-task-definition --family "$FAMILY" --container-definitions "$UPDATED_CONTAINER" --task-role-arn $TASK_ROLE_ARN | jq -r '.taskDefinition.taskDefinitionArn')
