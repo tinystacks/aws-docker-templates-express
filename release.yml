@@ -36,7 +36,7 @@ phases:
                 FAMILY=$(jq -r '.family' <<< $TASK_DEFINITION)
                 COMMIT_SHA=$ECR_IMAGE_URL:$(git rev-parse HEAD)    
                 UPDATED_CONTAINER=$(echo $CONTAINER_DEFINITIONS | jq --arg COMMIT_SHA "$COMMIT_SHA" 'map(.image = $COMMIT_SHA)')
-                NEW_DEF_ARN=$(aws ecs register-task-definition --family "$FAMILY" --container-definitions "$UPDATED_CONTAINER" --task-role-arn $TASK_ROLE_ARN | jq -r '.taskDefinition.taskDefinitionArn')
+                NEW_DEF_ARN=$(aws ecs register-task-definition --family "$FAMILY" --container-definitions "$UPDATED_CONTAINER" --task-role-arn $TASK_ROLE_ARN --network-mode awsvpc | jq -r '.taskDefinition.taskDefinitionArn')
                 aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --task-definition "$NEW_DEF_ARN" --force-new-deployment
             fi
         fi
