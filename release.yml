@@ -33,10 +33,10 @@ phases:
                 TASK_ARN=$(aws ecs describe-services --cluster $CLUSTER_ARN --services $SERVICE_NAME | jq -r '.services[].taskDefinition') 
                 TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition  "$TASK_ARN" | jq -r '.taskDefinition')
                 CONTAINER_DEFINITIONS=$(jq -r '.containerDefinitions' <<< $TASK_DEFINITION)
-                FAMILY=$(jq -r '.family' <<< $TASK_DEFINITION)
-                COMMIT_SHA=$ECR_IMAGE_URL:$(git rev-parse HEAD)    
-                UPDATED_CONTAINER=$(echo $CONTAINER_DEFINITIONS | jq --arg COMMIT_SHA "$COMMIT_SHA" 'map(.image = $COMMIT_SHA)')
-                NEW_DEF_ARN=$(aws ecs register-task-definition --family "$FAMILY" --container-definitions "$UPDATED_CONTAINER" --task-role-arn $TASK_ROLE_ARN --network-mode awsvpc | jq -r '.taskDefinition.taskDefinitionArn')
+                COMMIT_SHA=$ECR_IMAGE_URL:$(git rev-parse HEAD)  
+                CONTAINER_INDEX=$(echo $CONTAINER_DEFINITIONS | jq --arg IMAGE_URL "$ECR_IMAGE_URL" 'map(.image | contains($IMAGE_URL)) | index(true)' )
+                NEW_TASK_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$COMMIT_SHA" --arg INDEX "$CONTAINER_INDEX" '.containerDefinitions[$INDEX | tonumber].image = $IMAGE| del(.revision) | del(.status) | del(.statusString) | del(.registeredAt) | del(.taskDefinitionArn) | del(.compatibilities) | del(.requiresAttributes) | del(.registeredBy)' )
+                NEW_DEF_ARN=$(aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEFINTIION" | jq -r '.taskDefinition.taskDefinitionArn')
                 aws ecs update-service --service $SERVICE_NAME --cluster $CLUSTER_ARN --task-definition "$NEW_DEF_ARN" --force-new-deployment
             fi
         fi
