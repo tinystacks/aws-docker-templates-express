@@ -27,6 +27,11 @@ app.get("/healthy", (req:any, res:any) => {
   res.status(200).send("healthy");
 });
 
+app.get("/env-var", (req:any, res:any) => {
+  res.status(200).send(process.env.TEST_ENV_VAR);
+});
+
+
 app.get('/local-item/:id', parser, getItem);
 app.get('/local-item', parser, listItems);
 app.post('/local-item', parser, putItem);
