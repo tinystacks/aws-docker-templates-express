@@ -17,10 +17,10 @@ accountId=$(jq -r .Account <<< $callerIdentity);
 ## TODO: use this once our custom alias is approved
 # ecrEndpoint="public.ecr.aws/tinystacks/";
 ecrEndpoint="public.ecr.aws/m7b0o7h1";
-echo "getting version"
-version=$(cat version);
+echo "getting version" 
+version=$(jq -r .version ../package.json);
 echo "getting name"
-appName=$(cat name);
+appName=$(jq -r .name ../package.json);
 echo "getting commit sha"
 commitSha=$(git rev-parse HEAD);
 ecrImageUrl="${ecrEndpoint}/${appName}"
