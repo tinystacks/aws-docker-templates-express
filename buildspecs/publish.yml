@@ -1,0 +1,7 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - machine_arch_type=$(uname -m)
+      - arch_type=${ARCH:-$machine_arch_type}
+      - bash buildspecs/publish.sh $arch_type
