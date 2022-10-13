@@ -1,5 +1,5 @@
 {
-  "name": "express_crud_app",
+  "name": "aws-docker-templates-express",
   "version": "1.0.0",
   "description": "Node.js + express on Docker",
   "author": "tinystacks - about@tinystacks.com",
