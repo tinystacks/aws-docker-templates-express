@@ -18,9 +18,9 @@ accountId=$(jq -r .Account <<< $callerIdentity);
 # ecrEndpoint="public.ecr.aws/tinystacks/";
 ecrEndpoint="public.ecr.aws/m7b0o7h1";
 echo "getting version" 
-version=$(jq -r .version ../package.json);
+version=$(jq -r .version ./package.json);
 echo "getting name"
-appName=$(jq -r .name ../package.json);
+appName=$(jq -r .name ./package.json);
 echo "getting commit sha"
 commitSha=$(git rev-parse HEAD);
 ecrImageUrl="${ecrEndpoint}/${appName}"
