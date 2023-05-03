@@ -9,7 +9,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@types/pg": "^8.6.1",
+    "@types/pg": "^8.6.6",
     "aws-sdk": "^2.822.0",
     "express": "^4.16.1",
     "mysql2": "^2.3.3",
